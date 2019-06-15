@@ -11,7 +11,7 @@ class Modal extends React.Component  {
         }
     };
 
-    componentDidMount(){
+    componentWillMount(){
         this.setState({
             department: this.props.department ?
                 this.props.department
@@ -21,17 +21,24 @@ class Modal extends React.Component  {
                     name: ''
                 }
         });
-        
     }
 
     handleChange = (e) =>{
         const formControls = {...this.state.department};
-        formControls[e.target.name] = e.target.value;
-        
+
+        switch (e.target.name) {
+            case 'name':
+                formControls[e.target.name] = e.target.value;
+                break;
+            case 'internal':
+                formControls[e.target.name] = JSON.parse(e.target.value);
+                break;
+            default:
+        }
+    
         this.setState({
             department: formControls
         });
-        console.log(this.state);
     }
 
     
@@ -45,8 +52,6 @@ class Modal extends React.Component  {
         else {
             console.log('create');
         }
-        
-        //отправка формы
     }
 
     render(){
@@ -64,13 +69,12 @@ class Modal extends React.Component  {
                             onChange={ e => this.handleChange(e) }
                         />
                         <select
-                            value={this.state.department.name}
+                            value={this.state.department.internal}
                             name="internal"
                             onChange={ e => this.handleChange(e) }
-                            
                             >
-                            <option value="true">true</option>
-                            <option value="false">false</option>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
                         </select>
                         <p></p>
                         <button onClick={ this.sendform } type="submit">Save</button>
