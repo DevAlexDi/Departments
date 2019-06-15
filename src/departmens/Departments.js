@@ -84,7 +84,6 @@ class Departments extends React.Component {
                 ],
                 recordsTotal:5,
                 recordsFiltered:2,
-                
                 pageCount: this.getPageCount(5,2)
             });
 
@@ -130,28 +129,28 @@ class Departments extends React.Component {
 
     formFilterChange = (e) => {
 
-        // const formControls = {...this.state}
+        const formControls = {...this.state}
 
-        // switch (e.target.name) {
-        //     case 'recordsFiltered':
-        //         formControls[e.target.name] = +e.target.value;
-        //         break;
-        //     case 'sortDirection':
-        //         formControls[e.target.name] = e.target.value;
-        //         break;
+        switch (e.target.name) {
+            case 'recordsFiltered':
+                formControls[e.target.name] = +e.target.value;
+                break;
+            case 'sortDirection':
+                formControls[e.target.name] = e.target.value;
+                break;
 
-        //     case 'sortColumn':
-        //         formControls[e.target.name] = e.target.value;
-        //         break;
-        //     default:
-        // }
+            case 'sortColumn':
+                formControls[e.target.name] = e.target.value;
+                break;
+            default:
+        }
 
-        // this.setState({
-        //     recordsFiltered: formControls.recordsFiltered,
-        //     sortDirection: formControls.sortDirection,
-        //     sortColumn: formControls.sortColumn
-        // })
-        // console.log(this.state);
+        this.setState({
+            recordsFiltered: formControls.recordsFiltered,
+            sortDirection: formControls.sortDirection,
+            sortColumn: formControls.sortColumn
+        })
+        console.log(formControls);
 
     }
 
@@ -197,7 +196,7 @@ class Departments extends React.Component {
                         onChange={ e => this.formFilterChange(e) }
                     >
                         <option value="name">name</option>
-                        <option value="desc">created_at</option>
+                        <option value="created_at">created_at</option>
                     </select>
                     <button onSubmit={this.onFilter} type="submit">show</button>
                 </form>
