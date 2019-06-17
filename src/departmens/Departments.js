@@ -22,10 +22,6 @@ class Departments extends React.Component {
         isDepartmentsLoaded: false,
     }
 
-    componentWillMount () {
-        
-        
-    }
     componentDidMount () {
         this.getDepartmentsList();
     }
@@ -33,8 +29,6 @@ class Departments extends React.Component {
 
     getPageCount = (total,Filtered) => {
         const rest = total % Filtered;
-        console.log('a: '+(total+' B: '+Filtered));
-        console.log('total: '+(total / Filtered));
         return (Math.floor(total / Filtered) + (+!!rest));
     }
 
@@ -59,9 +53,6 @@ class Departments extends React.Component {
                     pageCount: this.getPageCount(res.data.recordsTotal,this.state.sizePerPage)
                 });
                 
-            },
-            (err)=>{
-                console.log(err);
             }
         ); 
     }
@@ -87,7 +78,11 @@ class Departments extends React.Component {
     }
 
     deleteDepartment = (id) => {
-        console.log(id);
+        axios.delete('http://13.59.6.200/api/v1/departments/'+id).then(
+            ()=>{
+                this.getDepartmentsList();
+            }
+        );
     }
 
     editDepartment = (item) => {

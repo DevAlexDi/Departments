@@ -63,13 +63,28 @@ class Modal extends React.Component  {
 
         
         if(this.props.department){
-            console.log('edit');
+            axios.put('http://13.59.6.200/api/v1/departments/'+ this.state.department.id, { department: params }).then(
+                (res)=>{
+                    console.log(res);
+                    if(res.data.status === 'error'){
+                        this.setState({
+                            submitMsg: responceToMsg(res.data.errors)
+                        });
+                    }
+                    else{
+                        this.setState({
+                            submitMsg: res.data.flash_message
+                        });
+                        this.props.getDepartmentsList();
+                    }
+                }
+            );
         }
         else {
             axios.post('http://13.59.6.200/api/v1/departments', { department: params }).then(
                 (res)=>{
                     console.log(res);
-                    if(res.status === 200){
+                    if(res.data.status === 'error'){
                         this.setState({
                             submitMsg: responceToMsg(res.data.errors)
                         });
