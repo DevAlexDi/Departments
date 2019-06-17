@@ -5,11 +5,8 @@ import Department from './department/Department';
 import Modal from './modal/Modal';
 
 
-
 class Departments extends React.Component {
 
-    //asc, desc
-    //name, created_at
     state = {
         departments: [],
         pageCount: null,
@@ -26,15 +23,13 @@ class Departments extends React.Component {
         this.getDepartmentsList();
     }
 
-
-    getPageCount = (total,Filtered) => {
-        const rest = total % Filtered;
-        return (Math.floor(total / Filtered) + (+!!rest));
+    getPageCount = (total,countPerPage) => {
+        const rest = total % countPerPage;
+        return (Math.floor(total / countPerPage) + (+!!rest));
     }
 
     getDepartmentsList(){
         this.loading();
-        
         const pageNum = +this.props.history.location.pathname.slice(1);
         const params = {
             sort_column: this.state.sortColumn,
@@ -44,15 +39,12 @@ class Departments extends React.Component {
         }
         axios.get('http://13.59.6.200/api/v1/departments', { params: params }).then(
             (res)=>{
-
                 this.setState({
                     isDepartmentsLoaded: true,
                     departments: res.data.data,
                     recordsTotal:res.data.recordsTotal,
-                    
                     pageCount: this.getPageCount(res.data.recordsTotal,this.state.sizePerPage)
-                });
-                
+                });  
             }
         ); 
     }
@@ -69,7 +61,6 @@ class Departments extends React.Component {
         });
     }
     
-
     closeModal = () => {
         this.setState({
             isModalOpen: false,
@@ -98,7 +89,6 @@ class Departments extends React.Component {
     }
 
     formFilterChange = (e) => {
-
         const formControls = {...this.state}
 
         switch (e.target.name) {
@@ -114,27 +104,23 @@ class Departments extends React.Component {
                 break;
             default:
         }
+
         this.setState({
             sizePerPage: formControls.sizePerPage,
             sortDirection: formControls.sortDirection,
             sortColumn: formControls.sortColumn
-        })
-    }
-
-    onFilter = (e) =>{
-        e.preventDefault();
-        this.getDepartmentsList();
-    }
-    
+        },()=>{
+            this.props.history.push('/1');
+            this.getDepartmentsList();
+        });
+    }  
 
     render(){
 
         return (
             <div>
-                
                 <button onClick={this.openModal}>Create Department</button>
-
-                <form onSubmit={this.onFilter} className="config-view">
+                <form className="config-view">
                     <p>size per page</p>
                     <select
                         value={this.state.sizePerPage}
@@ -163,10 +149,7 @@ class Departments extends React.Component {
                         <option value="name">name</option>
                         <option value="created_at">created_at</option>
                     </select>
-                    <button onSubmit={this.onFilter} type="submit">show</button>
                 </form>
-
-            
                 {
                 this.state.isDepartmentsLoaded ?
                     <div>
@@ -195,7 +178,12 @@ class Departments extends React.Component {
                         [...Array(this.state.pageCount)].map((item,index) => {
                             return (
                                 <li key={index}>
-                                    <button onClick={this.setLocation.bind(this,index + 1)}>page {index + 1}</button>
+                                    <button
+                                        className={+this.props.history.location.pathname.slice(1) === (index+1)?'active':null}
+                                        onClick={this.setLocation.bind(this,index + 1)}
+                                    >
+                                        page {index + 1}
+                                    </button>
                                 </li>
                             )
                         })
@@ -204,8 +192,6 @@ class Departments extends React.Component {
                     :
                     null
                 }
-            
-                
                 {
                 this.state.isModalOpen ?
                     <Modal 

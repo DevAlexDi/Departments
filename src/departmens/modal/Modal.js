@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import './modal.css';
 
-function responceToMsg (object){
+function errorToMsg (object){
     let msg = '';
     for(let key in object){
         msg = key+': ' + object[key]
@@ -60,15 +60,13 @@ class Modal extends React.Component  {
             name: this.state.department.name,
             internal: this.state.department.internal
         } 
-
-        
+ 
         if(this.props.department){
             axios.put('http://13.59.6.200/api/v1/departments/'+ this.state.department.id, { department: params }).then(
                 (res)=>{
-                    console.log(res);
                     if(res.data.status === 'error'){
                         this.setState({
-                            submitMsg: responceToMsg(res.data.errors)
+                            submitMsg: errorToMsg(res.data.errors)
                         });
                     }
                     else{
@@ -83,10 +81,9 @@ class Modal extends React.Component  {
         else {
             axios.post('http://13.59.6.200/api/v1/departments', { department: params }).then(
                 (res)=>{
-                    console.log(res);
                     if(res.data.status === 'error'){
                         this.setState({
-                            submitMsg: responceToMsg(res.data.errors)
+                            submitMsg: errorToMsg(res.data.errors)
                         });
                     }
                     else{
@@ -97,8 +94,7 @@ class Modal extends React.Component  {
                     }
                 }
             ); 
-        }
-          
+        }   
     }
 
     render(){

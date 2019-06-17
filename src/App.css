@@ -45,3 +45,7 @@
       border: 1px solid #000;
       padding: 25px;
   }
+
+  button.active {
+    color: blue;
+  }
