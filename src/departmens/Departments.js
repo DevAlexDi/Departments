@@ -1,5 +1,5 @@
 import React from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import '../App.css';
 import Department from './department/Department';
 import Modal from './modal/Modal';
@@ -14,7 +14,7 @@ class Departments extends React.Component {
         departments: [],
         pageCount: null,
         recordsTotal: null,
-        recordsFiltered: 10,
+        sizePerPage: 10,
         sortDirection: 'asc',
         sortColumn: 'name',
         isModalOpen: false,
@@ -33,62 +33,37 @@ class Departments extends React.Component {
 
     getPageCount = (total,Filtered) => {
         const rest = total % Filtered;
+        console.log('a: '+(total+' B: '+Filtered));
+        console.log('total: '+(total / Filtered));
         return (Math.floor(total / Filtered) + (+!!rest));
     }
 
-    getDepartmentsList(pageNumber = 1){
+    getDepartmentsList(){
         this.loading();
-        console.log(this.props.history.location);
-        // axios.get('http://13.59.6.200/api/v1/departments?sort_column=name&sort_direction=asc&page=1&size_per_page=50').then(
-        //     (res)=>{
-                
-        //     },
-        //     (err)=>{
-        //         console.log(err);
-        //     }
-        // )
-        setTimeout(()=>{
-            this.setState({
-                isDepartmentsLoaded: true,
-                departments: [
-                    {
-                        id: 1,
-                        name: "Department 1",
-                        internal: true,
-                        created_at: "2019-06-12 14:07:57 UTC"
-                    },
-                    {
-                        id: 2,
-                        name: "Department 2",
-                        internal: false,
-                        created_at: "2019-06-12 14:07:57 UTC"
-                    },
-                    {
-                        id: 3,
-                        name: "Department 3",
-                        internal: true,
-                        created_at: "2019-06-12 14:07:57 UTC"
-                    },
-                    {
-                        id: 4,
-                        name: "Department 4",
-                        internal: true,
-                        created_at: "2019-06-12 14:07:57 UTC"
-                    },
-                    {
-                        id: 5,
-                        name: "Department 5",
-                        internal: true,
-                        created_at: "2019-06-12 14:07:57 UTC"
-                    }
-                ],
-                recordsTotal:5,
-                recordsFiltered:2,
-                pageCount: this.getPageCount(5,2)
-            });
-
-        },2000)
         
+        const pageNum = +this.props.history.location.pathname.slice(1);
+        const params = {
+            sort_column: this.state.sortColumn,
+            sort_direction: this.state.sortDirection,
+            page: pageNum,
+            size_per_page: this.state.sizePerPage
+        }
+        axios.get('http://13.59.6.200/api/v1/departments', { params: params }).then(
+            (res)=>{
+
+                this.setState({
+                    isDepartmentsLoaded: true,
+                    departments: res.data.data,
+                    recordsTotal:res.data.recordsTotal,
+                    
+                    pageCount: this.getPageCount(res.data.recordsTotal,this.state.sizePerPage)
+                });
+                
+            },
+            (err)=>{
+                console.log(err);
+            }
+        ); 
     }
 
     loading(){
@@ -132,7 +107,7 @@ class Departments extends React.Component {
         const formControls = {...this.state}
 
         switch (e.target.name) {
-            case 'recordsFiltered':
+            case 'sizePerPage':
                 formControls[e.target.name] = +e.target.value;
                 break;
             case 'sortDirection':
@@ -144,21 +119,16 @@ class Departments extends React.Component {
                 break;
             default:
         }
-
         this.setState({
-            recordsFiltered: formControls.recordsFiltered,
+            sizePerPage: formControls.sizePerPage,
             sortDirection: formControls.sortDirection,
             sortColumn: formControls.sortColumn
         })
-        console.log(formControls);
-
     }
 
     onFilter = (e) =>{
         e.preventDefault();
-        
-
-        
+        this.getDepartmentsList();
     }
     
 
@@ -172,8 +142,8 @@ class Departments extends React.Component {
                 <form onSubmit={this.onFilter} className="config-view">
                     <p>size per page</p>
                     <select
-                        value={this.state.recordsFiltered}
-                        name="recordsFiltered"
+                        value={this.state.sizePerPage}
+                        name="sizePerPage"
                         onChange={ e => this.formFilterChange(e) }
                     >
                         <option value="10">10</option>
@@ -246,6 +216,7 @@ class Departments extends React.Component {
                     <Modal 
                         closeModal = {this.closeModal}
                         department = {this.state.activeDepartment}
+                        getDepartmentsList = {this.getDepartmentsList.bind(this)}
                     />
                     :
                     null

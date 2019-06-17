@@ -39,9 +39,6 @@
     padding: 0 5px;
   }
 
-  a.active {
-      color: red;
-  }
 
   .config-view {
       margin: 10px;

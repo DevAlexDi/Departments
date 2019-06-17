@@ -1,14 +1,24 @@
 import React from 'react';
+import axios from 'axios';
 import './modal.css';
+
+function responceToMsg (object){
+    let msg = '';
+    for(let key in object){
+        msg = key+': ' + object[key]
+    }
+    return msg;
+}
 
 class Modal extends React.Component  {
 
     state = {
         department: {
-            id: '',
-            internal:'',
+            id: null,
+            internal:true,
             name: ''
-        }
+        },
+        submitMsg:''
     };
 
     componentWillMount(){
@@ -17,7 +27,7 @@ class Modal extends React.Component  {
                 this.props.department
                 :
                 {
-                    internal:'',
+                    internal:true,
                     name: ''
                 }
         });
@@ -46,12 +56,34 @@ class Modal extends React.Component  {
     sendform = (e) => {
         e.preventDefault();
 
+        const params = {
+            name: this.state.department.name,
+            internal: this.state.department.internal
+        } 
+
+        
         if(this.props.department){
             console.log('edit');
         }
         else {
-            console.log('create');
+            axios.post('http://13.59.6.200/api/v1/departments', { department: params }).then(
+                (res)=>{
+                    console.log(res);
+                    if(res.status === 200){
+                        this.setState({
+                            submitMsg: responceToMsg(res.data.errors)
+                        });
+                    }
+                    else{
+                        this.setState({
+                            submitMsg: res.data.flash_message
+                        });
+                        this.props.getDepartmentsList();
+                    }
+                }
+            ); 
         }
+          
     }
 
     render(){
@@ -76,7 +108,7 @@ class Modal extends React.Component  {
                                 <option value="true">true</option>
                                 <option value="false">false</option>
                         </select>
-                        <p></p>
+                        <p>{this.state.submitMsg}</p>
                         <button onClick={ this.sendform } type="submit">Save</button>
                     </form>
                 </div>
